@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
-    "package": "dxt pack ."
+    "package": "mcpb pack ."
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0"

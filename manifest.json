@@ -4,7 +4,6 @@
   "display_name": "Parcel.app",
   "version": "1.0.0",
   "description": "MCP server for the Parcel.app delivery tracking API",
-  "long_description_file": "README.md",
   "author": {
     "name": "as-j"
   },
@@ -21,6 +20,8 @@
     "type": "node",
     "entry_point": "dist/index.js",
     "mcp_config": {
+      "command": "node",
+      "args": ["dist/index.js"],
       "env": {
         "PARCEL_API_KEY": "${user_config.parcel_api_key}"
       }
