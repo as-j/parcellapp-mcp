@@ -1,0 +1,30 @@
+{
+  "dxt_version": "0.1",
+  "name": "parcel-mcp",
+  "display_name": "Parcel.app",
+  "version": "1.0.0",
+  "description": "MCP server for the Parcel.app delivery tracking API",
+  "author": {
+    "name": "as-j"
+  },
+  "user_config": {
+    "parcel_api_key": {
+      "type": "string",
+      "title": "Parcel API Key",
+      "description": "Your Parcel.app API key — generate one at https://web.parcelapp.net",
+      "required": true,
+      "sensitive": true
+    }
+  },
+  "server": {
+    "type": "node",
+    "entry_point": "dist/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": ["dist/index.js"],
+      "env": {
+        "PARCEL_API_KEY": "${user_config.parcel_api_key}"
+      }
+    }
+  }
+}
