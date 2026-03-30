@@ -2,7 +2,7 @@
 
 MCP server for the [Parcel.app](https://parcelapp.net) delivery tracking API. Lets Claude (and other MCP clients) list and add package deliveries in your Parcel account.
 
-**[Download latest parcel-mcp.mcpb](https://github.com/as-j/parcellapp-mcp/releases/latest/download/parcel-mcp.mcpb)**
+**[Download latest parcellapp-mcp.dxt](https://github.com/as-j/parcellapp-mcp/releases/latest/download/parcellapp-mcp.dxt)**
 
 ## Tools
 
