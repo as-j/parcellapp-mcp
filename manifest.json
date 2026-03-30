@@ -8,15 +8,21 @@
   "author": {
     "name": "as-j"
   },
+  "user_config": {
+    "parcel_api_key": {
+      "type": "string",
+      "title": "Parcel API Key",
+      "description": "Your Parcel.app API key — generate one at https://web.parcelapp.net",
+      "required": true,
+      "sensitive": true
+    }
+  },
   "server": {
     "type": "node",
     "entry_point": "dist/index.js",
     "mcp_config": {
       "env": {
-        "PARCEL_API_KEY": {
-          "description": "Your Parcel.app API key — generate one at https://web.parcelapp.net",
-          "required": true
-        }
+        "PARCEL_API_KEY": "${user_config.parcel_api_key}"
       }
     }
   }
