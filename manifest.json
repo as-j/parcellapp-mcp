@@ -21,7 +21,7 @@
     "entry_point": "dist/index.js",
     "mcp_config": {
       "command": "node",
-      "args": ["dist/index.js"],
+      "args": ["${__dirname}/dist/index.js"],
       "env": {
         "PARCEL_API_KEY": "${user_config.parcel_api_key}"
       }
