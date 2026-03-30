@@ -17,12 +17,12 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
-      - run: npx @anthropic-ai/mcpb pack . parcel-mcp.mcpb
+      - run: npx @anthropic-ai/dxt pack .
       - name: Release
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: latest
           name: Latest build
-          prerelease: true
-          files: parcel-mcp.mcpb
+          prerelease: false
+          files: parcellapp-mcp.dxt
