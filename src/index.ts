@@ -64,7 +64,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
     {
       name: "add_delivery",
       description:
-        "Add a new delivery to Parcel.app. Tracking info will appear after the first server update. Rate limit: 20 req/day.",
+        "Add a new delivery to Parcel.app. Tracking info will appear after the first server update. Rate limit: 20 req/day. NOTE: carrier_code is required and must be specified explicitly — there is no auto-detect. Use list_carriers to look up the correct code if unsure.",
       inputSchema: {
         type: "object",
         required: ["tracking_number", "carrier_code", "description"],
@@ -76,7 +76,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
           carrier_code: {
             type: "string",
             description:
-              'Internal Parcel carrier code. Use "pholder" for a placeholder delivery. Full list at https://parcelapp.net/help/carriers.html',
+              "Internal Parcel carrier code. Use list_carriers to find the right code. Use \"pholder\" for a placeholder delivery.",
           },
           description: {
             type: "string",
@@ -91,6 +91,21 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
             type: "boolean",
             description:
               "Send a push notification once the delivery is added. Defaults to false.",
+          },
+        },
+      },
+    },
+    {
+      name: "list_carriers",
+      description:
+        "List all carriers supported by Parcel.app, optionally filtered by name. Use this to find the correct carrier_code before calling add_delivery. The list is updated daily.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          search: {
+            type: "string",
+            description:
+              "Optional search string to filter carriers by name or code (case-insensitive).",
           },
         },
       },
@@ -192,6 +207,27 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         },
       ],
     };
+  }
+
+  if (name === "list_carriers") {
+    const { search } = args as { search?: string };
+    const response = await fetch(`${PARCEL_API_BASE}/supported_carriers.json`);
+    const carriers = (await response.json()) as Record<string, string>;
+
+    let entries = Object.entries(carriers);
+    if (search) {
+      const term = search.toLowerCase();
+      entries = entries.filter(
+        ([code, name]) => code.toLowerCase().includes(term) || name.toLowerCase().includes(term)
+      );
+    }
+
+    if (entries.length === 0) {
+      return { content: [{ type: "text", text: `No carriers found matching "${search}".` }] };
+    }
+
+    const lines = entries.map(([code, name]) => `${code}: ${name}`);
+    return { content: [{ type: "text", text: lines.join("\n") }] };
   }
 
   return {
