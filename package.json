@@ -1,0 +1,17 @@
+{
+  "name": "parcel-mcp",
+  "version": "1.0.0",
+  "description": "MCP server for the Parcel.app delivery tracking API",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  }
+}
