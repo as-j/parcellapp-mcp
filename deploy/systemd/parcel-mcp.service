@@ -1,0 +1,16 @@
+[Unit]
+Description=Parcel MCP Streamable HTTP server
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/parcel-mcp
+EnvironmentFile=/etc/parcel-mcp.env
+ExecStart=/usr/bin/node /opt/parcel-mcp/dist/index.js
+Restart=always
+RestartSec=5
+User=www-data
+Group=www-data
+
+[Install]
+WantedBy=multi-user.target

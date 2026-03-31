@@ -1,8 +1,6 @@
 # parcel-mcp
 
-MCP server for the [Parcel.app](https://parcelapp.net) delivery tracking API. Lets Claude (and other MCP clients) list and add package deliveries in your Parcel account.
-
-**[Download latest parcellapp-mcp.dxt](https://github.com/as-j/parcellapp-mcp/releases/latest/download/parcellapp-mcp.dxt)**
+Hosted MCP server for the [Parcel.app](https://parcelapp.net) delivery tracking API. This branch is set up for a remote Streamable HTTP deployment that works well behind Nginx for ChatGPT and other MCP clients.
 
 ## Tools
 
@@ -26,12 +24,13 @@ Add a new delivery to your Parcel account.
 
 > **Note:** Newly added deliveries show "No data available" until the Parcel server first updates them.
 
-## Prerequisites
+## Requirements
 
-- Node.js 18+ (for built-in `fetch`)
-- A Parcel premium account with an API key — generate one at [web.parcelapp.net](https://web.parcelapp.net)
+- Node.js 18+ (Node 20 recommended)
+- A Parcel premium account with an API key from [web.parcelapp.net](https://web.parcelapp.net)
+- A Linux host where you can run Node behind Nginx
 
-## Setup
+## Local Build
 
 ```bash
 git clone https://github.com/as-j/parcellapp-mcp.git
@@ -40,29 +39,57 @@ npm install
 npm run build
 ```
 
-## Claude Desktop Config
+## Run The MCP Server
 
-Add to `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) or `%APPDATA%\Claude\claude_desktop_config.json` (Windows):
+Create an env file from [deploy/env/parcel-mcp.env.example](/Users/asj/dev/parcellapp-mcp/deploy/env/parcel-mcp.env.example), then start the server:
 
-```json
-{
-  "mcpServers": {
-    "parcel": {
-      "command": "node",
-      "args": ["/absolute/path/to/parcellapp-mcp/dist/index.js"],
-      "env": {
-        "PARCEL_API_KEY": "your_api_key_here"
-      }
-    }
-  }
-}
+```bash
+export PARCEL_API_KEY=your_api_key_here
+export HOST=127.0.0.1
+export PORT=3001
+npm run build
+npm start
 ```
 
-Restart Claude Desktop after saving.
+The server exposes:
+
+- `GET /healthz` for health checks
+- `POST /mcp` for initialize and JSON-RPC requests
+- `GET /mcp` for SSE streaming
+- `DELETE /mcp` for session shutdown
+
+If you set `MCP_AUTH_TOKEN`, clients must send `Authorization: Bearer <token>`.
+
+## Linode And Nginx
+
+Generic deploy templates live in:
+
+- [deploy/systemd/parcel-mcp.service](/Users/asj/dev/parcellapp-mcp/deploy/systemd/parcel-mcp.service)
+- [deploy/nginx/parcel-mcp.conf.example](/Users/asj/dev/parcellapp-mcp/deploy/nginx/parcel-mcp.conf.example)
+- [deploy/env/parcel-mcp.env.example](/Users/asj/dev/parcellapp-mcp/deploy/env/parcel-mcp.env.example)
+
+Typical SSH deploy flow:
+
+```bash
+ssh your-server
+cd /opt/parcel-mcp
+git pull
+npm ci
+npm run build
+sudo systemctl restart parcel-mcp
+sudo systemctl status parcel-mcp
+curl http://127.0.0.1:3001/healthz
+```
+
+Then point Nginx at the local Node process and use your public HTTPS MCP URL in ChatGPT.
+
+## ChatGPT MCP Setup
+
+Once Nginx is proxying to this service, use your HTTPS MCP endpoint URL ending in `/mcp` when adding the connector in ChatGPT. Keep the committed repo generic; your real hostname can stay only in your local Nginx config and server setup.
 
 ## Example Usage
 
-Once configured, you can ask Claude things like:
+Once configured, you can ask ChatGPT things like:
 
 - *"What packages do I have in transit?"*
 - *"Show me my active deliveries"*

@@ -7,8 +7,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -17,12 +15,3 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
-      - run: npx @anthropic-ai/dxt pack .
-      - name: Release
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: latest
-          name: Latest build
-          prerelease: false
-          files: parcellapp-mcp.dxt
